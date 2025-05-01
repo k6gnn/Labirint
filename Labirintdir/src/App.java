@@ -18,6 +18,10 @@ public class App {
         System.out.println("Select test case (1, 2, or 3): ");
         int test = scanner.nextInt();
 
+        System.out.println("Select variant (1 for V1, 2 for V2): ");
+        int variant = scanner.nextInt();
+        boolean isV1 = (variant == 1);
+
         int startX = 0, startY = 0;
 
         switch (test) {
@@ -96,11 +100,11 @@ public class App {
 
         LAB[startY][startX] = L;
         nodePath.append("[X=").append(startX + 1).append(",Y=").append(startY + 1).append("], ");
-        TRY(startX, startY);
+        TRY(startX, startY, isV1);
         printResults(startX, startY);
     }
 
-    static void TRY(int x, int y) {
+    static void TRY(int x, int y, boolean isV1) {
         if (x == 0 || x == M - 1 || y == 0 || y == N - 1) {
             YES = true;
             return;
@@ -109,7 +113,7 @@ public class App {
         for (int k = 0; k < 4 && !YES; k++) {
             int u = x + CX[k];
             int v = y + CY[k];
-            traceLog.append(traceCounter++).append(") ");
+            traceLog.append(String.format("%4d", traceCounter++)).append(") ");
             traceLog.append(ruleIndent()).append("R").append(k + 1).append(". U=").append(u + 1).append(", V=")
                     .append(v + 1).append(". ");
             if (isInside(u, v)) {
@@ -121,13 +125,14 @@ public class App {
                             .append("]:=").append(L).append(".\n");
                     nodePath.append("[X=").append(u + 1).append(",Y=").append(v + 1).append("], ");
                     rulePath.append("R").append(k + 1).append(", ");
-                    TRY(u, v);
+                    TRY(u, v, isV1);
                     if (!YES) {
                         traceLog.append(ruleIndent()).append("Backtrack from X=").append(u + 1).append(", Y=")
                                 .append(v + 1)
                                 .append(", L=").append(L).append(". LAB[").append(u + 1).append(",").append(v + 1)
-                                .append("]:=-1. L:=L-1=").append(L - 1).append(".\n");
-                        LAB[v][u] = -1;
+                                .append("]:=").append(isV1 ? "-1" : "0")
+                                .append(". L:=L-1=").append(L - 1).append(".\n");
+                        LAB[v][u] = isV1 ? -1 : 0;
                         L--;
                         removeLastNode();
                         removeLastRule();
